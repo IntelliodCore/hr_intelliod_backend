@@ -1,7 +1,7 @@
 import express from 'express';
 import { prisma } from '../lib/prisma.js';
 import { hashPassword, generateTempPassword } from '../lib/auth.js';
-import { sendInvitationEmail, sendApprovalNotification } from '../lib/email.js';
+// Email functionality removed - passwords will be returned in response
 import { authenticateToken, requireRole } from '../middleware/auth.js';
 import { inviteEmployeeSchema, approveEmployeeSchema } from '../validation/schemas.js';
 
@@ -57,13 +57,8 @@ router.post('/invite-employee', authenticateToken, requireRole(['admin', 'hr']),
       }
     });
 
-    // Send invitation email
-    const emailResult = await sendInvitationEmail(email, tempPassword);
-    
-    if (!emailResult.success) {
-      console.error('Failed to send invitation email:', emailResult.error);
-      // Don't fail the request, just log the error
-    }
+    // Email functionality removed - return password in response
+    console.log(`Temporary password for ${email}: ${tempPassword}`);
 
     // Create audit log
     await prisma.auditLog.create({
@@ -181,12 +176,8 @@ router.put('/approve-employee/:id', authenticateToken, requireRole(['admin', 'hr
       });
     }
 
-    // Send notification email
-    const emailResult = await sendApprovalNotification(onboarding.user.email, approved);
-    
-    if (!emailResult.success) {
-      console.error('Failed to send approval notification:', emailResult.error);
-    }
+    // Email functionality removed - log approval status
+    console.log(`Employee ${onboarding.user.email} ${approved ? 'approved' : 'rejected'}`);
 
     // Create audit log
     await prisma.auditLog.create({
